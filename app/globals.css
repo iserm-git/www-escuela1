@@ -1,0 +1,12 @@
+/* apps/reactjs/lw2025/www-escuela/app/globals.css */
+:root {
+  --brand: #1976d2;
+  color-scheme: light;
+}
+html,
+body {
+  height: 100%;
+}
+* {
+  box-sizing: border-box;
+}
