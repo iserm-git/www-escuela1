@@ -18,19 +18,20 @@ import {
   FormHelperText,
 } from "@mui/material";
 
-type AlumnoData = {
+type ProfesorData = {
   id?: number;
+  clave: string;
   nombre: string;
-  matricula: string;
+  apellidos: string;
   carrera?: string;
   activo?: boolean;
 };
 
-type AlumnoDialogProps = {
+type ProfesorDialogProps = {
   open: boolean;
-  initial?: AlumnoData | null;
+  initial?: ProfesorData | null;
   onClose: () => void;
-  onSave: (alumno: AlumnoData) => void;
+  onSave: (profesor: ProfesorData) => void;
 };
 
 // Carreras del TecNM
@@ -49,15 +50,16 @@ const CARRERAS = [
   { value: "ARQ", label: "Arquitectura" },
 ];
 
-export default function AlumnoDialog({
+export default function ProfesorDialog({
   open,
   initial,
   onClose,
   onSave,
-}: AlumnoDialogProps) {
+}: ProfesorDialogProps) {
   // Estados del formulario
+  const [clave, setClave] = useState("");
   const [nombre, setNombre] = useState("");
-  const [matricula, setMatricula] = useState("");
+  const [apellidos, setApellidos] = useState("");
   const [carrera, setCarrera] = useState("");
   const [activo, setActivo] = useState(true);
 
@@ -67,8 +69,9 @@ export default function AlumnoDialog({
   // Sincronizar con datos iniciales cuando se abre el diálogo
   useEffect(() => {
     if (open) {
+      setClave(initial?.clave ?? "");
       setNombre(initial?.nombre ?? "");
-      setMatricula(initial?.matricula ?? "");
+      setApellidos(initial?.apellidos ?? "");
       setCarrera(initial?.carrera ?? "");
       setActivo(initial?.activo ?? true);
       setErrors({});
@@ -79,16 +82,22 @@ export default function AlumnoDialog({
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!nombre.trim()) {
-      newErrors.nombre = "El nombre es obligatorio";
-    } else if (nombre.trim().length < 3) {
-      newErrors.nombre = "El nombre debe tener al menos 3 caracteres";
+    if (!clave.trim()) {
+      newErrors.clave = "La clave de profesor es obligatoria";
+    } else if (!/^[A-Z0-9]+$/i.test(clave.trim())) {
+      newErrors.clave = "La clave solo puede contener letras y números";
     }
 
-    if (!matricula.trim()) {
-      newErrors.matricula = "La matrícula es obligatoria";
-    } else if (!/^[A-Z0-9]+$/i.test(matricula.trim())) {
-      newErrors.matricula = "La matrícula solo puede contener letras y números";
+    if (!nombre.trim()) {
+      newErrors.nombre = "El nombre es obligatorio";
+    } else if (nombre.trim().length < 2) {
+      newErrors.nombre = "El nombre debe tener al menos 2 caracteres";
+    }
+
+    if (!apellidos.trim()) {
+      newErrors.apellidos = "Los apellidos son obligatorios";
+    } else if (apellidos.trim().length < 3) {
+      newErrors.apellidos = "Los apellidos deben tener al menos 3 caracteres";
     }
 
     setErrors(newErrors);
@@ -99,19 +108,20 @@ export default function AlumnoDialog({
   const handleSave = () => {
     if (!validate()) return;
 
-    const alumnoData: AlumnoData = {
+    const profesorData: ProfesorData = {
+      clave: clave.trim().toUpperCase(),
       nombre: nombre.trim(),
-      matricula: matricula.trim().toUpperCase(),
+      apellidos: apellidos.trim(),
       carrera: carrera || undefined,
       activo,
     };
 
     // Si es edición, incluir el ID
     if (initial?.id) {
-      alumnoData.id = initial.id;
+      profesorData.id = initial.id;
     }
 
-    onSave(alumnoData);
+    onSave(profesorData);
   };
 
   // Limpiar error cuando se edita un campo
@@ -125,11 +135,14 @@ export default function AlumnoDialog({
     }
 
     switch (field) {
+      case "clave":
+        setClave(value as string);
+        break;
       case "nombre":
         setNombre(value as string);
         break;
-      case "matricula":
-        setMatricula(value as string);
+      case "apellidos":
+        setApellidos(value as string);
         break;
       case "carrera":
         setCarrera(value as string);
@@ -157,38 +170,50 @@ export default function AlumnoDialog({
       onKeyDown={handleKeyDown}
     >
       <DialogTitle>
-        {initial?.id ? "Editar Alumno" : "Nuevo Alumno"}
+        {initial?.id ? "Editar Profesor" : "Nuevo Profesor"}
       </DialogTitle>
 
       <DialogContent dividers>
         <Stack spacing={2.5} sx={{ mt: 1 }}>
-          {/* Nombre Completo */}
+          {/* Clave de Profesor */}
           <TextField
-            label="Nombre Completo"
+            label="Clave de Profesor"
             fullWidth
             required
             autoFocus
-            value={nombre}
-            onChange={(e) => handleFieldChange("nombre", e.target.value)}
-            error={Boolean(errors.nombre)}
-            helperText={errors.nombre || "Ej: Juan Pérez García"}
-            placeholder="Ingresa el nombre completo"
-          />
-
-          {/* Matrícula */}
-          <TextField
-            label="Matrícula"
-            fullWidth
-            required
-            value={matricula}
-            onChange={(e) => handleFieldChange("matricula", e.target.value)}
-            error={Boolean(errors.matricula)}
-            helperText={errors.matricula || "Ej: A001, ISC001"}
-            placeholder="Código de matrícula"
+            value={clave}
+            onChange={(e) => handleFieldChange("clave", e.target.value)}
+            error={Boolean(errors.clave)}
+            helperText={errors.clave || "Ej: PROF001, ISC001"}
+            placeholder="Código de profesor"
             inputProps={{
               style: { textTransform: "uppercase" },
               maxLength: 20,
             }}
+          />
+
+          {/* Nombre */}
+          <TextField
+            label="Nombre"
+            fullWidth
+            required
+            value={nombre}
+            onChange={(e) => handleFieldChange("nombre", e.target.value)}
+            error={Boolean(errors.nombre)}
+            helperText={errors.nombre || "Ej: Juan, María"}
+            placeholder="Ingresa el nombre"
+          />
+
+          {/* Apellidos */}
+          <TextField
+            label="Apellidos"
+            fullWidth
+            required
+            value={apellidos}
+            onChange={(e) => handleFieldChange("apellidos", e.target.value)}
+            error={Boolean(errors.apellidos)}
+            helperText={errors.apellidos || "Ej: García López, Pérez Sánchez"}
+            placeholder="Ingresa los apellidos"
           />
 
           {/* Carrera */}
@@ -224,7 +249,7 @@ export default function AlumnoDialog({
                 color="success"
               />
             }
-            label={activo ? "Alumno Activo" : "Alumno Inactivo"}
+            label={activo ? "Profesor Activo" : "Profesor Inactivo"}
             sx={{
               ".MuiFormControlLabel-label": {
                 fontWeight: activo ? 500 : 400,
@@ -240,7 +265,7 @@ export default function AlumnoDialog({
           Cancelar
         </Button>
         <Button onClick={handleSave} variant="contained" color="primary">
-          {initial?.id ? "Guardar Cambios" : "Crear Alumno"}
+          {initial?.id ? "Guardar Cambios" : "Crear Profesor"}
         </Button>
       </DialogActions>
     </Dialog>

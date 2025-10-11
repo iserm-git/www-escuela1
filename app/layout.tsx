@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Providers from "./providers";
-import Chrome from "./Chrome"; // <- wrapper cliente
+import Chrome from "./Chrome";
 
 export const metadata: Metadata = {
   title: "Gestión Escolar",

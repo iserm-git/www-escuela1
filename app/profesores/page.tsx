@@ -29,141 +29,127 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import SearchIcon from "@mui/icons-material/Search";
 
 import Protected from "@/components/Protected";
-import AlumnoDialog from "@/components/AlumnoDialog";
-import AlumnoDetailDialog from "@/components/AlumnoDetailDialog";
+import ProfesorDialog from "@/components/ProfesorDialog";
+import ProfesorDetailDialog from "@/components/ProfesorDetailDialog";
 
-type Alumno = {
+type Profesor = {
   id: number;
+  clave: string;
   nombre: string;
-  matricula: string;
-  carrera?: string;
+  apellidos: string;
+  carrera: string;
   activo?: boolean;
-  apellidoPaterno?: string;
-  apellidoMaterno?: string;
-  curp?: string;
   email?: string;
   telefono?: string;
   fechaIngreso?: string;
 };
 
 // Datos mock - reemplazar con llamada a API
-const INITIAL_DATA: Alumno[] = [
+const INITIAL_DATA: Profesor[] = [
   {
     id: 1,
-    nombre: "Ana Pérez García",
-    matricula: "A001",
+    clave: "PROF001",
+    nombre: "María",
+    apellidos: "González López",
     carrera: "ISC",
     activo: true,
-    apellidoPaterno: "Pérez",
-    apellidoMaterno: "García",
-    curp: "PEGA000101MDFRRN09",
-    email: "ana.perez@example.com",
+    email: "maria.gonzalez@example.com",
     telefono: "444-123-4567",
-    fechaIngreso: "2023-08-15",
+    fechaIngreso: "2020-08-15",
   },
   {
     id: 2,
-    nombre: "Luis Díaz Martínez",
-    matricula: "A002",
+    clave: "PROF002",
+    nombre: "Juan",
+    apellidos: "Martínez Pérez",
     carrera: "ITIC",
     activo: true,
-    apellidoPaterno: "Díaz",
-    apellidoMaterno: "Martínez",
-    curp: "DIML000202HDFRZS01",
-    email: "luis.diaz@example.com",
+    email: "juan.martinez@example.com",
     telefono: "444-234-5678",
-    fechaIngreso: "2023-08-15",
+    fechaIngreso: "2019-01-10",
   },
   {
     id: 3,
-    nombre: "María González López",
-    matricula: "A003",
+    clave: "PROF003",
+    nombre: "Ana",
+    apellidos: "Rodríguez Sánchez",
     carrera: "IIND",
     activo: true,
-    apellidoPaterno: "González",
-    apellidoMaterno: "López",
-    curp: "GOLM000303MDFLPR08",
-    email: "maria.gonzalez@example.com",
-    fechaIngreso: "2023-08-15",
+    email: "ana.rodriguez@example.com",
+    fechaIngreso: "2021-08-15",
   },
   {
     id: 4,
-    nombre: "Carlos Sánchez Ruiz",
-    matricula: "A004",
+    clave: "PROF004",
+    nombre: "Carlos",
+    apellidos: "López Torres",
     carrera: "ISC",
     activo: false,
-    apellidoPaterno: "Sánchez",
-    apellidoMaterno: "Ruiz",
-    curp: "SARC000404HDFLZR07",
-    fechaIngreso: "2022-08-20",
+    email: "carlos.lopez@example.com",
+    telefono: "444-345-6789",
+    fechaIngreso: "2018-02-20",
   },
   {
     id: 5,
-    nombre: "Laura Fernández Torres",
-    matricula: "A005",
+    clave: "PROF005",
+    nombre: "Laura",
+    apellidos: "Hernández García",
     carrera: "CP",
     activo: true,
-    apellidoPaterno: "Fernández",
-    apellidoMaterno: "Torres",
-    email: "laura.fernandez@example.com",
+    email: "laura.hernandez@example.com",
     telefono: "444-456-7890",
-    fechaIngreso: "2024-01-10",
+    fechaIngreso: "2022-01-15",
   },
   {
     id: 6,
-    nombre: "José Ramírez Castro",
-    matricula: "A006",
+    clave: "PROF006",
+    nombre: "Roberto",
+    apellidos: "Jiménez Flores",
     carrera: "IIA",
     activo: true,
-    apellidoPaterno: "Ramírez",
-    apellidoMaterno: "Castro",
-    fechaIngreso: "2023-08-15",
+    fechaIngreso: "2020-08-15",
   },
   {
     id: 7,
-    nombre: "Patricia Morales Vega",
-    matricula: "A007",
+    clave: "PROF007",
+    nombre: "Patricia",
+    apellidos: "Morales Vega",
     carrera: "IGE",
     activo: true,
-    apellidoPaterno: "Morales",
-    apellidoMaterno: "Vega",
-    fechaIngreso: "2023-08-15",
+    fechaIngreso: "2021-08-15",
   },
   {
     id: 8,
-    nombre: "Roberto Jiménez Flores",
-    matricula: "A008",
+    clave: "PROF008",
+    nombre: "José",
+    apellidos: "Ramírez Castro",
     carrera: "IE",
     activo: true,
-    apellidoPaterno: "Jiménez",
-    apellidoMaterno: "Flores",
-    fechaIngreso: "2024-01-10",
+    fechaIngreso: "2019-08-15",
   },
   {
     id: 9,
-    nombre: "Diana Hernández Cruz",
-    matricula: "A009",
+    clave: "PROF009",
+    nombre: "Diana",
+    apellidos: "Fernández Cruz",
     carrera: "IIAS",
     activo: true,
-    apellidoPaterno: "Hernández",
-    apellidoMaterno: "Cruz",
-    fechaIngreso: "2023-08-15",
+    fechaIngreso: "2020-01-10",
   },
   {
     id: 10,
-    nombre: "Miguel Torres Ortiz",
-    matricula: "A010",
+    clave: "PROF010",
+    nombre: "Miguel",
+    apellidos: "Torres Ortiz",
     carrera: "ARQ",
     activo: true,
-    apellidoPaterno: "Torres",
-    apellidoMaterno: "Ortiz",
-    fechaIngreso: "2023-08-15",
+    fechaIngreso: "2021-08-15",
   },
 ];
 
-export default function AlumnosPage() {
-  const [rows, setRows] = useState<Alumno[]>(INITIAL_DATA);
-  const [filteredRows, setFilteredRows] = useState<Alumno[]>(INITIAL_DATA);
+export default function ProfesoresPage() {
+  const [rows, setRows] = useState<Profesor[]>(INITIAL_DATA);
+  const [filteredRows, setFilteredRows] = useState<Profesor[]>(INITIAL_DATA);
   const [searchTerm, setSearchTerm] = useState("");
 
   // Paginación
@@ -172,11 +158,11 @@ export default function AlumnosPage() {
 
   // Dialog de edición/creación
   const [open, setOpen] = useState(false);
-  const [editing, setEditing] = useState<Alumno | null>(null);
+  const [editing, setEditing] = useState<Profesor | null>(null);
 
   // Dialog de detalle
   const [detailOpen, setDetailOpen] = useState(false);
-  const [viewingAlumno, setViewingAlumno] = useState<Alumno | null>(null);
+  const [viewingProfesor, setViewingProfesor] = useState<Profesor | null>(null);
 
   // Manejo de búsqueda
   const handleSearch = (value: string) => {
@@ -184,7 +170,8 @@ export default function AlumnosPage() {
     const filtered = rows.filter(
       (row) =>
         row.nombre.toLowerCase().includes(value.toLowerCase()) ||
-        row.matricula.toLowerCase().includes(value.toLowerCase()) ||
+        row.apellidos.toLowerCase().includes(value.toLowerCase()) ||
+        row.clave.toLowerCase().includes(value.toLowerCase()) ||
         row.carrera?.toLowerCase().includes(value.toLowerCase())
     );
     setFilteredRows(filtered);
@@ -209,57 +196,65 @@ export default function AlumnosPage() {
     setOpen(true);
   };
 
-  const handleEdit = (alumno: Alumno) => {
-    setEditing(alumno);
+  const handleEdit = (profesor: Profesor) => {
+    setEditing(profesor);
     setOpen(true);
   };
 
-  const handleViewDetail = (alumno: Alumno) => {
-    setViewingAlumno(alumno);
+  const handleViewDetail = (profesor: Profesor) => {
+    setViewingProfesor(profesor);
     setDetailOpen(true);
   };
 
   const handleDelete = (id: number) => {
-    if (window.confirm("¿Estás seguro de eliminar este alumno?")) {
+    if (window.confirm("¿Estás seguro de eliminar este profesor?")) {
       const newRows = rows.filter((r) => r.id !== id);
       setRows(newRows);
       setFilteredRows(
         newRows.filter(
           (row) =>
             row.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            row.matricula.toLowerCase().includes(searchTerm.toLowerCase())
+            row.apellidos.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            row.clave.toLowerCase().includes(searchTerm.toLowerCase())
         )
       );
     }
   };
 
   const handleSave = (
-    alumno: Partial<Alumno> & { nombre: string; matricula: string }
+    profesor: Partial<Profesor> & {
+      clave: string;
+      nombre: string;
+      apellidos: string;
+      carrera: string;
+    }
   ) => {
-    if (alumno.id) {
+    if (profesor.id) {
       // Editar
       const newRows = rows.map((r) =>
-        r.id === alumno.id ? ({ ...r, ...alumno } as Alumno) : r
+        r.id === profesor.id ? ({ ...r, ...profesor } as Profesor) : r
       );
       setRows(newRows);
       setFilteredRows(
         newRows.filter(
           (row) =>
             row.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            row.matricula.toLowerCase().includes(searchTerm.toLowerCase())
+            row.apellidos.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            row.clave.toLowerCase().includes(searchTerm.toLowerCase())
         )
       );
     } else {
       // Crear nuevo
       const nextId = Math.max(0, ...rows.map((r) => r.id)) + 1;
-      const newAlumno: Alumno = {
+      const newProfesor: Profesor = {
         id: nextId,
-        nombre: alumno.nombre,
-        matricula: alumno.matricula,
-        carrera: alumno.carrera,
-        activo: alumno.activo ?? true,
+        clave: profesor.clave,
+        nombre: profesor.nombre,
+        apellidos: profesor.apellidos,
+        carrera: profesor.carrera,
+        activo: profesor.activo ?? true,
       };
-      const newRows = [...rows, newAlumno];
+      const newRows = [...rows, newProfesor];
       setRows(newRows);
       setFilteredRows(newRows);
     }
@@ -284,7 +279,7 @@ export default function AlumnosPage() {
           sx={{ mb: 3 }}
         >
           <Typography variant="h4" component="h1">
-            Gestión de Alumnos
+            Gestión de Profesores
           </Typography>
           <Button
             variant="contained"
@@ -292,7 +287,7 @@ export default function AlumnosPage() {
             onClick={handleNew}
             size="large"
           >
-            Nuevo Alumno
+            Nuevo Profesor
           </Button>
         </Stack>
 
@@ -300,7 +295,7 @@ export default function AlumnosPage() {
         <Paper sx={{ p: 2, mb: 2 }}>
           <TextField
             fullWidth
-            placeholder="Buscar por nombre, matrícula o carrera..."
+            placeholder="Buscar por clave, nombre, apellidos o carrera..."
             value={searchTerm}
             onChange={(e) => handleSearch(e.target.value)}
             InputProps={{
@@ -315,14 +310,17 @@ export default function AlumnosPage() {
 
         {/* Tabla */}
         <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="tabla de alumnos">
+          <Table sx={{ minWidth: 650 }} aria-label="tabla de profesores">
             <TableHead>
               <TableRow sx={{ bgcolor: "primary.main" }}>
                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                  Matrícula
+                  Clave
                 </TableCell>
                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                   Nombre
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Apellidos
                 </TableCell>
                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                   Carrera
@@ -341,9 +339,9 @@ export default function AlumnosPage() {
             <TableBody>
               {visibleRows.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
+                  <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
                     <Typography color="text.secondary">
-                      No se encontraron alumnos
+                      No se encontraron profesores
                     </Typography>
                   </TableCell>
                 </TableRow>
@@ -356,10 +354,11 @@ export default function AlumnosPage() {
                   >
                     <TableCell component="th" scope="row">
                       <Typography variant="body2" fontWeight="medium">
-                        {row.matricula}
+                        {row.clave}
                       </Typography>
                     </TableCell>
                     <TableCell>{row.nombre}</TableCell>
+                    <TableCell>{row.apellidos}</TableCell>
                     <TableCell>
                       <Chip
                         label={row.carrera || "N/A"}
@@ -429,18 +428,18 @@ export default function AlumnosPage() {
           />
         </TableContainer>
 
-        {/* Dialog de Alumno para crear/editar */}
-        <AlumnoDialog
+        {/* Dialog de Profesor para crear/editar */}
+        <ProfesorDialog
           open={open}
           initial={editing ?? undefined}
           onClose={() => setOpen(false)}
           onSave={handleSave}
         />
 
-        {/* Dialog de detalle del alumno */}
-        <AlumnoDetailDialog
+        {/* Dialog de detalle del profesor */}
+        <ProfesorDetailDialog
           open={detailOpen}
-          alumno={viewingAlumno}
+          profesor={viewingProfesor}
           onClose={() => setDetailOpen(false)}
         />
       </Container>

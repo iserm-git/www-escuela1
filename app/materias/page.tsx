@@ -29,141 +29,94 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import SearchIcon from "@mui/icons-material/Search";
 
 import Protected from "@/components/Protected";
-import AlumnoDialog from "@/components/AlumnoDialog";
-import AlumnoDetailDialog from "@/components/AlumnoDetailDialog";
+import MateriaDialog from "@/components/MateriaDialog";
+import MateriaDetailDialog from "@/components/MateriaDetailDialog";
 
-type Alumno = {
+type Materia = {
   id: number;
+  clave: string;
   nombre: string;
-  matricula: string;
+  creditos: number;
   carrera?: string;
-  activo?: boolean;
-  apellidoPaterno?: string;
-  apellidoMaterno?: string;
-  curp?: string;
-  email?: string;
-  telefono?: string;
-  fechaIngreso?: string;
 };
 
 // Datos mock - reemplazar con llamada a API
-const INITIAL_DATA: Alumno[] = [
+const INITIAL_DATA: Materia[] = [
   {
     id: 1,
-    nombre: "Ana Pérez García",
-    matricula: "A001",
+    clave: "ACD-0908",
+    nombre: "Taller de Investigación I",
+    creditos: 4,
     carrera: "ISC",
-    activo: true,
-    apellidoPaterno: "Pérez",
-    apellidoMaterno: "García",
-    curp: "PEGA000101MDFRRN09",
-    email: "ana.perez@example.com",
-    telefono: "444-123-4567",
-    fechaIngreso: "2023-08-15",
   },
   {
     id: 2,
-    nombre: "Luis Díaz Martínez",
-    matricula: "A002",
-    carrera: "ITIC",
-    activo: true,
-    apellidoPaterno: "Díaz",
-    apellidoMaterno: "Martínez",
-    curp: "DIML000202HDFRZS01",
-    email: "luis.diaz@example.com",
-    telefono: "444-234-5678",
-    fechaIngreso: "2023-08-15",
+    clave: "AED-1285",
+    nombre: "Desarrollo Sustentable",
+    creditos: 5,
+    carrera: "ISC",
   },
   {
     id: 3,
-    nombre: "María González López",
-    matricula: "A003",
-    carrera: "IIND",
-    activo: true,
-    apellidoPaterno: "González",
-    apellidoMaterno: "López",
-    curp: "GOLM000303MDFLPR08",
-    email: "maria.gonzalez@example.com",
-    fechaIngreso: "2023-08-15",
+    clave: "SCC-1007",
+    nombre: "Programación Orientada a Objetos",
+    creditos: 5,
+    carrera: "ISC",
   },
   {
     id: 4,
-    nombre: "Carlos Sánchez Ruiz",
-    matricula: "A004",
+    clave: "SCD-1015",
+    nombre: "Estructura de Datos",
+    creditos: 5,
     carrera: "ISC",
-    activo: false,
-    apellidoPaterno: "Sánchez",
-    apellidoMaterno: "Ruiz",
-    curp: "SARC000404HDFLZR07",
-    fechaIngreso: "2022-08-20",
   },
   {
     id: 5,
-    nombre: "Laura Fernández Torres",
-    matricula: "A005",
-    carrera: "CP",
-    activo: true,
-    apellidoPaterno: "Fernández",
-    apellidoMaterno: "Torres",
-    email: "laura.fernandez@example.com",
-    telefono: "444-456-7890",
-    fechaIngreso: "2024-01-10",
+    clave: "SCH-1024",
+    nombre: "Fundamentos de Bases de Datos",
+    creditos: 5,
+    carrera: "ISC",
   },
   {
     id: 6,
-    nombre: "José Ramírez Castro",
-    matricula: "A006",
-    carrera: "IIA",
-    activo: true,
-    apellidoPaterno: "Ramírez",
-    apellidoMaterno: "Castro",
-    fechaIngreso: "2023-08-15",
+    clave: "SCD-1008",
+    nombre: "Programación Web",
+    creditos: 5,
+    carrera: "ITIC",
   },
   {
     id: 7,
-    nombre: "Patricia Morales Vega",
-    matricula: "A007",
-    carrera: "IGE",
-    activo: true,
-    apellidoPaterno: "Morales",
-    apellidoMaterno: "Vega",
-    fechaIngreso: "2023-08-15",
+    clave: "ACA-0907",
+    nombre: "Taller de Administración",
+    creditos: 4,
+    carrera: "IIND",
   },
   {
     id: 8,
-    nombre: "Roberto Jiménez Flores",
-    matricula: "A008",
-    carrera: "IE",
-    activo: true,
-    apellidoPaterno: "Jiménez",
-    apellidoMaterno: "Flores",
-    fechaIngreso: "2024-01-10",
+    clave: "ACC-0906",
+    nombre: "Fundamentos de Investigación",
+    creditos: 4,
+    carrera: "CP",
   },
   {
     id: 9,
-    nombre: "Diana Hernández Cruz",
-    matricula: "A009",
-    carrera: "IIAS",
-    activo: true,
-    apellidoPaterno: "Hernández",
-    apellidoMaterno: "Cruz",
-    fechaIngreso: "2023-08-15",
+    clave: "SCD-1027",
+    nombre: "Sistemas Operativos",
+    creditos: 5,
+    carrera: "ISC",
   },
   {
     id: 10,
-    nombre: "Miguel Torres Ortiz",
-    matricula: "A010",
-    carrera: "ARQ",
-    activo: true,
-    apellidoPaterno: "Torres",
-    apellidoMaterno: "Ortiz",
-    fechaIngreso: "2023-08-15",
+    clave: "SCG-1009",
+    nombre: "Redes de Computadoras",
+    creditos: 5,
+    carrera: "ITIC",
   },
 ];
 
-export default function AlumnosPage() {
-  const [rows, setRows] = useState<Alumno[]>(INITIAL_DATA);
-  const [filteredRows, setFilteredRows] = useState<Alumno[]>(INITIAL_DATA);
+export default function MateriasPage() {
+  const [rows, setRows] = useState<Materia[]>(INITIAL_DATA);
+  const [filteredRows, setFilteredRows] = useState<Materia[]>(INITIAL_DATA);
   const [searchTerm, setSearchTerm] = useState("");
 
   // Paginación
@@ -172,11 +125,11 @@ export default function AlumnosPage() {
 
   // Dialog de edición/creación
   const [open, setOpen] = useState(false);
-  const [editing, setEditing] = useState<Alumno | null>(null);
+  const [editing, setEditing] = useState<Materia | null>(null);
 
   // Dialog de detalle
   const [detailOpen, setDetailOpen] = useState(false);
-  const [viewingAlumno, setViewingAlumno] = useState<Alumno | null>(null);
+  const [viewingMateria, setViewingMateria] = useState<Materia | null>(null);
 
   // Manejo de búsqueda
   const handleSearch = (value: string) => {
@@ -184,7 +137,7 @@ export default function AlumnosPage() {
     const filtered = rows.filter(
       (row) =>
         row.nombre.toLowerCase().includes(value.toLowerCase()) ||
-        row.matricula.toLowerCase().includes(value.toLowerCase()) ||
+        row.clave.toLowerCase().includes(value.toLowerCase()) ||
         row.carrera?.toLowerCase().includes(value.toLowerCase())
     );
     setFilteredRows(filtered);
@@ -209,57 +162,63 @@ export default function AlumnosPage() {
     setOpen(true);
   };
 
-  const handleEdit = (alumno: Alumno) => {
-    setEditing(alumno);
+  const handleEdit = (materia: Materia) => {
+    setEditing(materia);
     setOpen(true);
   };
 
-  const handleViewDetail = (alumno: Alumno) => {
-    setViewingAlumno(alumno);
+  const handleViewDetail = (materia: Materia) => {
+    setViewingMateria(materia);
     setDetailOpen(true);
   };
 
   const handleDelete = (id: number) => {
-    if (window.confirm("¿Estás seguro de eliminar este alumno?")) {
+    if (window.confirm("¿Estás seguro de eliminar esta materia?")) {
       const newRows = rows.filter((r) => r.id !== id);
       setRows(newRows);
       setFilteredRows(
         newRows.filter(
           (row) =>
             row.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            row.matricula.toLowerCase().includes(searchTerm.toLowerCase())
+            row.clave.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            row.carrera?.toLowerCase().includes(searchTerm.toLowerCase())
         )
       );
     }
   };
 
   const handleSave = (
-    alumno: Partial<Alumno> & { nombre: string; matricula: string }
+    materia: Partial<Materia> & {
+      clave: string;
+      nombre: string;
+      creditos: number;
+    }
   ) => {
-    if (alumno.id) {
+    if (materia.id) {
       // Editar
       const newRows = rows.map((r) =>
-        r.id === alumno.id ? ({ ...r, ...alumno } as Alumno) : r
+        r.id === materia.id ? ({ ...r, ...materia } as Materia) : r
       );
       setRows(newRows);
       setFilteredRows(
         newRows.filter(
           (row) =>
             row.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            row.matricula.toLowerCase().includes(searchTerm.toLowerCase())
+            row.clave.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            row.carrera?.toLowerCase().includes(searchTerm.toLowerCase())
         )
       );
     } else {
       // Crear nuevo
       const nextId = Math.max(0, ...rows.map((r) => r.id)) + 1;
-      const newAlumno: Alumno = {
+      const newMateria: Materia = {
         id: nextId,
-        nombre: alumno.nombre,
-        matricula: alumno.matricula,
-        carrera: alumno.carrera,
-        activo: alumno.activo ?? true,
+        clave: materia.clave,
+        nombre: materia.nombre,
+        creditos: materia.creditos,
+        carrera: materia.carrera,
       };
-      const newRows = [...rows, newAlumno];
+      const newRows = [...rows, newMateria];
       setRows(newRows);
       setFilteredRows(newRows);
     }
@@ -284,7 +243,7 @@ export default function AlumnosPage() {
           sx={{ mb: 3 }}
         >
           <Typography variant="h4" component="h1">
-            Gestión de Alumnos
+            Gestión de Materias
           </Typography>
           <Button
             variant="contained"
@@ -292,7 +251,7 @@ export default function AlumnosPage() {
             onClick={handleNew}
             size="large"
           >
-            Nuevo Alumno
+            Nueva Materia
           </Button>
         </Stack>
 
@@ -300,7 +259,7 @@ export default function AlumnosPage() {
         <Paper sx={{ p: 2, mb: 2 }}>
           <TextField
             fullWidth
-            placeholder="Buscar por nombre, matrícula o carrera..."
+            placeholder="Buscar por clave, nombre o carrera..."
             value={searchTerm}
             onChange={(e) => handleSearch(e.target.value)}
             InputProps={{
@@ -315,20 +274,20 @@ export default function AlumnosPage() {
 
         {/* Tabla */}
         <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="tabla de alumnos">
+          <Table sx={{ minWidth: 650 }} aria-label="tabla de materias">
             <TableHead>
               <TableRow sx={{ bgcolor: "primary.main" }}>
                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                  Matrícula
+                  Clave
                 </TableCell>
                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                   Nombre
                 </TableCell>
                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                  Carrera
+                  Créditos
                 </TableCell>
                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                  Estado
+                  Carrera
                 </TableCell>
                 <TableCell
                   align="center"
@@ -343,7 +302,7 @@ export default function AlumnosPage() {
                 <TableRow>
                   <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
                     <Typography color="text.secondary">
-                      No se encontraron alumnos
+                      No se encontraron materias
                     </Typography>
                   </TableCell>
                 </TableRow>
@@ -356,23 +315,23 @@ export default function AlumnosPage() {
                   >
                     <TableCell component="th" scope="row">
                       <Typography variant="body2" fontWeight="medium">
-                        {row.matricula}
+                        {row.clave}
                       </Typography>
                     </TableCell>
                     <TableCell>{row.nombre}</TableCell>
                     <TableCell>
                       <Chip
-                        label={row.carrera || "N/A"}
+                        label={row.creditos}
                         size="small"
-                        color="primary"
-                        variant="outlined"
+                        color="secondary"
                       />
                     </TableCell>
                     <TableCell>
                       <Chip
-                        label={row.activo ? "Activo" : "Inactivo"}
+                        label={row.carrera || "General"}
                         size="small"
-                        color={row.activo ? "success" : "default"}
+                        color="primary"
+                        variant="outlined"
                       />
                     </TableCell>
                     <TableCell align="center">
@@ -429,18 +388,18 @@ export default function AlumnosPage() {
           />
         </TableContainer>
 
-        {/* Dialog de Alumno para crear/editar */}
-        <AlumnoDialog
+        {/* Dialog de Materia para crear/editar */}
+        <MateriaDialog
           open={open}
           initial={editing ?? undefined}
           onClose={() => setOpen(false)}
           onSave={handleSave}
         />
 
-        {/* Dialog de detalle del alumno */}
-        <AlumnoDetailDialog
+        {/* Dialog de detalle de la materia */}
+        <MateriaDetailDialog
           open={detailOpen}
-          alumno={viewingAlumno}
+          materia={viewingMateria}
           onClose={() => setDetailOpen(false)}
         />
       </Container>
