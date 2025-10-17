@@ -21,25 +21,21 @@ import {
   ListItemText,
   Divider,
   Stack,
+  Collapse,
 } from "@mui/material";
+import {
+  Menu as MenuIcon,
+  School as SchoolIcon,
+  AccountCircle,
+  Logout as LogoutIcon,
+  Person as PersonIcon,
+  ExpandLess,
+  ExpandMore,
+  ArrowDropDown as ArrowDropDownIcon,
+} from "@mui/icons-material";
 
-// Íconos
-import MenuIcon from "@mui/icons-material/Menu";
-import SchoolIcon from "@mui/icons-material/School";
-import AccountCircle from "@mui/icons-material/AccountCircle";
-import LogoutIcon from "@mui/icons-material/Logout";
-import PersonIcon from "@mui/icons-material/Person";
-
-// Configuración del menú principal
-const MENU_ITEMS = [
-  { label: "Inicio", href: "/home" },
-  { label: "Alumnos", href: "/alumnos" },
-  { label: "Profesores", href: "/profesores" },
-  { label: "Materias", href: "/materias" },
-  { label: "Grupos", href: "/grupos" },
-  { label: "Reportes", href: "/reportes" },
-  { label: "Gestión escolar", href: "/gestion" },
-];
+// Importar configuración de navegación
+import { SIDEBAR_LINKS, isNavGroup, type NavItem } from "@/config/navigation";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -48,8 +44,16 @@ export default function Navbar() {
   // Estado para menú móvil (Drawer)
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // Estado para menú de usuario (Desktop)
+  // Estado para menú de usuario
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+
+  // Estado para submenús en desktop
+  const [anchorElMenu, setAnchorElMenu] = useState<{
+    [key: string]: HTMLElement | null;
+  }>({});
+
+  // Estado para submenús en móvil (drawer)
+  const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
 
   // Handlers para drawer móvil
   const handleDrawerToggle = () => {
@@ -76,14 +80,36 @@ export default function Navbar() {
     router.push("/perfil");
   };
 
+  // Handlers para submenús desktop
+  const handleOpenSubmenu = (
+    key: string,
+    event: React.MouseEvent<HTMLElement>
+  ) => {
+    setAnchorElMenu({ ...anchorElMenu, [key]: event.currentTarget });
+  };
+
+  const handleCloseSubmenu = (key: string) => {
+    setAnchorElMenu({ ...anchorElMenu, [key]: null });
+  };
+
+  // Handler para submenús móvil
+  const handleToggleMobileSubmenu = (title: string) => {
+    setOpenSubmenu(openSubmenu === title ? null : title);
+  };
+
   // Verifica si una ruta está activa
   const isActive = (href: string) => {
     return pathname === href || pathname.startsWith(href + "/");
   };
 
+  // Verifica si un grupo tiene una ruta activa
+  const isGroupActive = (children: any[]) => {
+    return children.some((child) => isActive(child.href));
+  };
+
   // Drawer para móvil
   const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
+    <Box sx={{ textAlign: "center" }}>
       {/* Logo en drawer */}
       <Stack
         direction="row"
@@ -97,14 +123,89 @@ export default function Navbar() {
           Sistema Escolar
         </Typography>
       </Stack>
-
       <Divider />
 
       {/* Lista de navegación */}
       <List>
-        {MENU_ITEMS.map((item) => {
-          const active = isActive(item.href);
+        {SIDEBAR_LINKS.map((item) => {
+          // Si es un grupo con submenú
+          if (isNavGroup(item)) {
+            const isOpen = openSubmenu === item.title;
+            const hasActiveChild = isGroupActive(item.children);
 
+            return (
+              <Box key={item.title}>
+                <ListItemButton
+                  onClick={() => handleToggleMobileSubmenu(item.title)}
+                  selected={hasActiveChild}
+                  sx={{
+                    "&.Mui-selected": {
+                      bgcolor: "primary.light",
+                      color: "primary.contrastText",
+                    },
+                  }}
+                >
+                  {item.icon && (
+                    <ListItemIcon>
+                      <item.icon
+                        sx={{
+                          color: hasActiveChild
+                            ? "primary.contrastText"
+                            : "inherit",
+                        }}
+                      />
+                    </ListItemIcon>
+                  )}
+                  <ListItemText primary={item.title} />
+                  {isOpen ? <ExpandLess /> : <ExpandMore />}
+                </ListItemButton>
+
+                <Collapse in={isOpen} timeout="auto" unmountOnExit>
+                  <List component="div" disablePadding>
+                    {item.children.map((child) => {
+                      const active = isActive(child.href);
+                      return (
+                        <ListItemButton
+                          key={child.href}
+                          component={Link}
+                          href={child.href}
+                          selected={active}
+                          sx={{
+                            pl: 4,
+                            "&.Mui-selected": {
+                              bgcolor: "primary.main",
+                              color: "primary.contrastText",
+                              "&:hover": {
+                                bgcolor: "primary.dark",
+                              },
+                            },
+                          }}
+                          onClick={handleDrawerToggle}
+                        >
+                          {child.icon && (
+                            <ListItemIcon>
+                              <child.icon
+                                fontSize="small"
+                                sx={{
+                                  color: active
+                                    ? "primary.contrastText"
+                                    : "inherit",
+                                }}
+                              />
+                            </ListItemIcon>
+                          )}
+                          <ListItemText primary={child.label} />
+                        </ListItemButton>
+                      );
+                    })}
+                  </List>
+                </Collapse>
+              </Box>
+            );
+          }
+
+          // Si es un link simple
+          const active = isActive(item.href);
           return (
             <ListItem key={item.href} disablePadding>
               <ListItemButton
@@ -120,7 +221,17 @@ export default function Navbar() {
                     },
                   },
                 }}
+                onClick={handleDrawerToggle}
               >
+                {item.icon && (
+                  <ListItemIcon>
+                    <item.icon
+                      sx={{
+                        color: active ? "primary.contrastText" : "inherit",
+                      }}
+                    />
+                  </ListItemIcon>
+                )}
                 <ListItemText primary={item.label} />
               </ListItemButton>
             </ListItem>
@@ -156,7 +267,7 @@ export default function Navbar() {
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
-              aria-label="menu de navegación"
+              aria-label="menú de navegación"
               aria-controls="menu-appbar"
               aria-haspopup="true"
               onClick={handleDrawerToggle}
@@ -187,19 +298,82 @@ export default function Navbar() {
 
           {/* Menú Desktop (oculto en móvil) */}
           <Box
-            sx={{ flexGrow: 1, display: { xs: "none", md: "flex" }, gap: 1 }}
+            sx={{ flexGrow: 1, display: { xs: "none", md: "flex" }, gap: 0.5 }}
           >
-            {MENU_ITEMS.map((item) => {
-              const active = isActive(item.href);
+            {SIDEBAR_LINKS.map((item) => {
+              // Si es un grupo con submenú
+              if (isNavGroup(item)) {
+                const menuKey = item.title;
+                const hasActiveChild = isGroupActive(item.children);
+                const isSubmenuOpen = Boolean(anchorElMenu[menuKey]);
 
+                return (
+                  <Box key={item.title}>
+                    <Button
+                      onClick={(e) => handleOpenSubmenu(menuKey, e)}
+                      endIcon={<ArrowDropDownIcon />}
+                      startIcon={item.icon && <item.icon />}
+                      sx={{
+                        color: "white",
+                        bgcolor:
+                          hasActiveChild || isSubmenuOpen
+                            ? "rgba(255, 255, 255, 0.2)"
+                            : "transparent",
+                        "&:hover": {
+                          bgcolor: "rgba(255, 255, 255, 0.1)",
+                        },
+                      }}
+                    >
+                      {item.title}
+                    </Button>
+
+                    <Menu
+                      anchorEl={anchorElMenu[menuKey]}
+                      open={isSubmenuOpen}
+                      onClose={() => handleCloseSubmenu(menuKey)}
+                      anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "left",
+                      }}
+                      transformOrigin={{
+                        vertical: "top",
+                        horizontal: "left",
+                      }}
+                    >
+                      {item.children.map((child) => {
+                        const active = isActive(child.href);
+                        return (
+                          <MenuItem
+                            key={child.href}
+                            component={Link}
+                            href={child.href}
+                            onClick={() => handleCloseSubmenu(menuKey)}
+                            selected={active}
+                          >
+                            {child.icon && (
+                              <ListItemIcon>
+                                <child.icon fontSize="small" />
+                              </ListItemIcon>
+                            )}
+                            <ListItemText>{child.label}</ListItemText>
+                          </MenuItem>
+                        );
+                      })}
+                    </Menu>
+                  </Box>
+                );
+              }
+
+              // Si es un link simple
+              const active = isActive(item.href);
               return (
                 <Button
                   key={item.href}
                   component={Link}
                   href={item.href}
+                  startIcon={item.icon && <item.icon />}
                   sx={{
                     color: "white",
-                    display: "block",
                     bgcolor: active
                       ? "rgba(255, 255, 255, 0.2)"
                       : "transparent",
@@ -270,7 +444,7 @@ export default function Navbar() {
         }}
         sx={{
           display: { xs: "block", md: "none" },
-          "& .MuiDrawer-paper": { boxSizing: "border-box", width: 240 },
+          "& .MuiDrawer-paper": { boxSizing: "border-box", width: 280 },
         }}
       >
         {drawer}
