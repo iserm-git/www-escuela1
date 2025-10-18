@@ -71,7 +71,7 @@ export default function LoginPage() {
           />
 
           <TextField
-            label="Contraseña"
+            label="Password"
             type={showPass ? "text" : "password"}
             fullWidth
             required
