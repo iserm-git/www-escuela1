@@ -1,0 +1,24 @@
+graph TD
+    A[app/login/page.tsx<br/>~130 líneas] --> B[useState Hooks<br/>6 estados]
+    A --> C[useAuth Hook<br/>AuthContext]
+    A --> D[useRouter Hook<br/>Navegación]
+    A --> E[Lógica handleSubmit<br/>Validación y errores]
+    A --> F[UI completa MUI<br/>Container, Paper, TextField, etc.]
+    
+    B --> G[email]
+    B --> H[password]
+    B --> I[remember]
+    B --> J[showPass]
+    B --> K[submitting]
+    B --> L[errorMsg]
+    
+    F --> M[TextField Email]
+    F --> N[TextField Password]
+    F --> O[Checkbox Remember]
+    F --> P[Button Submit]
+    F --> Q[Alert Error]
+    F --> R[Buttons Actions]
+    
+    style A fill:#ff6b6b,color:#fff
+    style E fill:#feca57
+    style F fill:#48dbfb

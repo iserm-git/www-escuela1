@@ -1,0 +1,128 @@
+graph TB
+    subgraph Root["🏗️ ARQUITECTURA BASE"]
+        Layout[app/layout.tsx<br/>Metadata + HTML Structure]
+        Providers[app/providers.tsx<br/>Theme + Auth Context]
+        Chrome[app/Chrome.tsx<br/>Conditional Layout]
+    end
+    
+    subgraph Navigation["🧭 NAVEGACIÓN"]
+        Navbar[src/components/Navbar.tsx<br/>AppBar + Menu Items<br/>Mobile Drawer]
+        Footer[src/components/Footer.tsx<br/>Copyright Info]
+    end
+    
+    subgraph Pages["📄 PÁGINAS PRINCIPALES"]
+        direction TB
+        Login[🔑 /login<br/>app/login/page.tsx]
+        Home[🏠 /home<br/>app/home/page.tsx<br/>Dashboard + KPIs]
+        
+        subgraph CRUD["📊 MÓDULOS CRUD"]
+            Alumnos[👨‍🎓 /alumnos<br/>Lista + CRUD]
+            AlumnoDetail[👤 /alumnos/id<br/>Detalle Individual]
+            Profesores[👨‍🏫 /profesores<br/>Lista + CRUD]
+            Materias[📚 /materias<br/>Lista + CRUD]
+            Grupos[👥 /grupos<br/>Lista + CRUD]
+        end
+        
+        Reportes[📊 /reportes<br/>Reportes y Estadísticas]
+        Gestion[⚙️ /gestion<br/>Gestión Escolar]
+    end
+    
+    subgraph Components["🧩 COMPONENTES REUTILIZABLES"]
+        direction LR
+        
+        subgraph Dialogs["💬 Diálogos"]
+            AlumnoDialog[AlumnoDialog<br/>Crear/Editar]
+            ProfesorDialog[ProfesorDialog<br/>Crear/Editar]
+            MateriaDialog[MateriaDialog<br/>Crear/Editar]
+            GrupoDialog[GrupoDialog<br/>Crear/Editar]
+        end
+        
+        subgraph DetailDialogs["👁️ Vistas Detalle"]
+            AlumnoDetailDialog[AlumnoDetailDialog<br/>Vista completa]
+            ProfesorDetailDialog[ProfesorDetailDialog<br/>Vista completa]
+            MateriaDetailDialog[MateriaDetailDialog<br/>Vista completa]
+            GrupoDetailDialog[GrupoDetailDialog<br/>Vista completa]
+        end
+        
+        Protected[🔒 Protected<br/>Auth Wrapper]
+    end
+    
+    subgraph Features["⚙️ FUNCIONALIDADES"]
+        direction TB
+        
+        Tables[📋 Tablas MUI<br/>- Paginación<br/>- Búsqueda<br/>- Ordenamiento]
+        
+        Forms[📝 Formularios<br/>- Validación<br/>- Estados<br/>- CRUD Operations]
+        
+        Search[🔍 Búsqueda<br/>- Filtrado en tiempo real<br/>- Multi-campo]
+        
+        Actions[⚡ Acciones<br/>- Crear ➕<br/>- Editar ✏️<br/>- Eliminar 🗑️<br/>- Ver 👁️]
+    end
+    
+    subgraph Libraries["📦 LIBRERÍAS PRINCIPALES"]
+        MUI[Material-UI<br/>- Components<br/>- Icons<br/>- Charts<br/>- DataGrid]
+        
+        NextJS[Next.js 15<br/>- App Router<br/>- Server Components<br/>- Client Components]
+        
+        React[React 19<br/>- Hooks<br/>- useState<br/>- useEffect]
+        
+        DateFns[date-fns<br/>Manejo de fechas]
+        
+        Axios[axios<br/>HTTP Cliente]
+    end
+    
+    subgraph DataFlow["📊 FLUJO DE DATOS"]
+        direction TB
+        MockData[(Datos Mock<br/>INITIAL_DATA)]
+        State[useState<br/>Local State]
+        Filter[Filtrado<br/>filteredRows]
+        Display[Renderizado<br/>visibleRows]
+        
+        MockData --> State
+        State --> Filter
+        Filter --> Display
+    end
+    
+    %% Conexiones principales
+    Layout --> Providers
+    Providers --> Chrome
+    Chrome -.->|Conditional| Navbar
+    Chrome --> Pages
+    Chrome -.->|Conditional| Footer
+    
+    Pages --> Protected
+    Protected -.->|Auth Check| CRUD
+    
+    Alumnos --> AlumnoDialog
+    Alumnos --> AlumnoDetailDialog
+    Profesores --> ProfesorDialog
+    Profesores --> ProfesorDetailDialog
+    Materias --> MateriaDialog
+    Materias --> MateriaDetailDialog
+    Grupos --> GrupoDialog
+    Grupos --> GrupoDetailDialog
+    
+    CRUD --> Tables
+    CRUD --> Forms
+    CRUD --> Search
+    CRUD --> Actions
+    
+    Pages --> DataFlow
+    Components --> MUI
+    Pages --> NextJS
+    Components --> React
+    
+    %% Estilos
+    classDef rootStyle fill:#673AB7,stroke:#4527A0,stroke-width:3px,color:#fff
+    classDef pageStyle fill:#4CAF50,stroke:#2E7D32,stroke-width:2px,color:#fff
+    classDef componentStyle fill:#2196F3,stroke:#1565C0,stroke-width:2px,color:#fff
+    classDef libStyle fill:#FF9800,stroke:#E65100,stroke-width:2px,color:#fff
+    classDef dataStyle fill:#F44336,stroke:#C62828,stroke-width:2px,color:#fff
+    classDef featureStyle fill:#00BCD4,stroke:#006064,stroke-width:2px,color:#fff
+    
+    class Layout,Providers,Chrome rootStyle
+    class Login,Home,Alumnos,Profesores,Materias,Grupos,Reportes,Gestion pageStyle
+    class Navbar,Footer,Protected,AlumnoDialog,ProfesorDialog,MateriaDialog,GrupoDialog componentStyle
+    class MUI,NextJS,React,DateFns,Axios libStyle
+    class MockData,State,Filter,Display dataStyle
+    class Tables,Forms,Search,Actions featureStyle

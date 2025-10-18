@@ -1,0 +1,179 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Carrera {
+  id        BigInt      @id @default(autoincrement()) @db.UnsignedBigInt
+  clave     String      @unique @db.VarChar(10)
+  nombre    String      @db.VarChar(200)
+  activo    Boolean     @default(true)
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @updatedAt @map("updated_at")
+  
+  alumnos   Alumno[]
+  profesores Profesor[]
+  grupos    Grupo[]
+
+  @@map("carreras")
+}
+
+model Alumno {
+  id               BigInt         @id @default(autoincrement()) @db.UnsignedBigInt
+  matricula        String         @unique @db.VarChar(20)
+  nombre           String         @db.VarChar(100)
+  apellidoPaterno  String?        @map("apellido_paterno") @db.VarChar(100)
+  apellidoMaterno  String?        @map("apellido_materno") @db.VarChar(100)
+  curp             String?        @unique @db.VarChar(18)
+  carreraId        BigInt?        @map("carrera_id") @db.UnsignedBigInt
+  activo           Boolean        @default(true)
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+  
+  carrera          Carrera?       @relation(fields: [carreraId], references: [id], onDelete: SetNull)
+  inscripciones    Inscripcion[]
+  asistencias      Asistencia[]
+  calificaciones   Calificacion[]
+
+  @@index([matricula])
+  @@index([carreraId])
+  @@map("alumnos")
+}
+
+model Profesor {
+  id               BigInt         @id @default(autoincrement()) @db.UnsignedBigInt
+  clave            String         @unique @db.VarChar(20)
+  nombre           String         @db.VarChar(100)
+  apellidoPaterno  String?        @map("apellido_paterno") @db.VarChar(100)
+  apellidoMaterno  String?        @map("apellido_materno") @db.VarChar(100)
+  carreraId        BigInt?        @map("carrera_id") @db.UnsignedBigInt
+  email            String?        @db.VarChar(100)
+  telefono         String?        @db.VarChar(20)
+  activo           Boolean        @default(true)
+  fechaIngreso     DateTime?      @map("fecha_ingreso") @db.Date
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+  
+  carrera          Carrera?       @relation(fields: [carreraId], references: [id], onDelete: SetNull)
+  grupoMaterias    GrupoMateria[]
+  calificaciones   Calificacion[] @relation("CalificacionCapturada")
+
+  @@index([clave])
+  @@index([carreraId])
+  @@map("profesores")
+}
+
+model Materia {
+  id             BigInt         @id @default(autoincrement()) @db.UnsignedBigInt
+  clave          String         @unique @db.VarChar(20)
+  nombre         String         @db.VarChar(200)
+  creditos       Int            @default(0) @db.SmallInt
+  activo         Boolean        @default(true)
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+  
+  grupoMaterias  GrupoMateria[]
+  asistencias    Asistencia[]
+  calificaciones Calificacion[]
+
+  @@index([clave])
+  @@map("materias")
+}
+
+model Grupo {
+  id             BigInt         @id @default(autoincrement()) @db.UnsignedBigInt
+  clave          String         @unique @db.VarChar(20)
+  nombre         String         @db.VarChar(100)
+  carreraId      BigInt         @map("carrera_id") @db.UnsignedBigInt
+  limiteAlumnos  Int            @default(30) @map("limite_alumnos") @db.SmallInt
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+  
+  carrera        Carrera        @relation(fields: [carreraId], references: [id], onDelete: Cascade)
+  inscripciones  Inscripcion[]
+  grupoMaterias  GrupoMateria[]
+  asistencias    Asistencia[]
+  calificaciones Calificacion[]
+
+  @@index([carreraId])
+  @@map("grupos")
+}
+
+model GrupoMateria {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  grupoId    BigInt    @map("grupo_id") @db.UnsignedBigInt
+  materiaId  BigInt    @map("materia_id") @db.UnsignedBigInt
+  profesorId BigInt?   @map("profesor_id") @db.UnsignedBigInt
+  createdAt  DateTime  @default(now()) @map("created_at")
+  
+  grupo      Grupo     @relation(fields: [grupoId], references: [id], onDelete: Cascade)
+  materia    Materia   @relation(fields: [materiaId], references: [id], onDelete: Cascade)
+  profesor   Profesor? @relation(fields: [profesorId], references: [id], onDelete: SetNull)
+
+  @@unique([grupoId, materiaId])
+  @@map("grupo_materias")
+}
+
+model Inscripcion {
+  id                BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  alumnoId          BigInt   @map("alumno_id") @db.UnsignedBigInt
+  grupoId           BigInt   @map("grupo_id") @db.UnsignedBigInt
+  fechaInscripcion  DateTime @default(now()) @map("fecha_inscripcion") @db.Date
+  createdAt         DateTime @default(now()) @map("created_at")
+  
+  alumno            Alumno   @relation(fields: [alumnoId], references: [id], onDelete: Cascade)
+  grupo             Grupo    @relation(fields: [grupoId], references: [id], onDelete: Cascade)
+
+  @@unique([alumnoId, grupoId])
+  @@index([alumnoId])
+  @@index([grupoId])
+  @@map("inscripciones")
+}
+
+model Asistencia {
+  id             BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  alumnoId       BigInt   @map("alumno_id") @db.UnsignedBigInt
+  grupoId        BigInt   @map("grupo_id") @db.UnsignedBigInt
+  materiaId      BigInt   @map("materia_id") @db.UnsignedBigInt
+  fecha          DateTime @db.Date
+  estado         String   @default("ausente") @db.VarChar(20)
+  observaciones  String?  @db.Text
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  
+  alumno         Alumno   @relation(fields: [alumnoId], references: [id], onDelete: Cascade)
+  grupo          Grupo    @relation(fields: [grupoId], references: [id], onDelete: Cascade)
+  materia        Materia  @relation(fields: [materiaId], references: [id], onDelete: Cascade)
+
+  @@unique([alumnoId, grupoId, materiaId, fecha])
+  @@index([fecha])
+  @@index([alumnoId])
+  @@map("asistencias")
+}
+
+model Calificacion {
+  id             BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  alumnoId       BigInt    @map("alumno_id") @db.UnsignedBigInt
+  grupoId        BigInt    @map("grupo_id") @db.UnsignedBigInt
+  materiaId      BigInt    @map("materia_id") @db.UnsignedBigInt
+  evaluacion     String    @db.VarChar(50)
+  calificacion   Decimal   @db.Decimal(4, 2)
+  capturadaPor   BigInt?   @map("capturada_por") @db.UnsignedBigInt
+  fechaCaptura   DateTime  @default(now()) @map("fecha_captura")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+  
+  alumno         Alumno    @relation(fields: [alumnoId], references: [id], onDelete: Cascade)
+  grupo          Grupo     @relation(fields: [grupoId], references: [id], onDelete: Cascade)
+  materia        Materia   @relation(fields: [materiaId], references: [id], onDelete: Cascade)
+  profesor       Profesor? @relation("CalificacionCapturada", fields: [capturadaPor], references: [id], onDelete: SetNull)
+
+  @@unique([alumnoId, grupoId, materiaId, evaluacion])
+  @@index([alumnoId])
+  @@index([grupoId, materiaId])
+  @@map("calificaciones")
+}

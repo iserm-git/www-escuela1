@@ -1,0 +1,38 @@
+graph TD
+    A[app/login/page.tsx<br/>~30 líneas] --> B[LoginForm Component]
+    
+    B --> C[useLoginForm Hook<br/>Lógica de negocio]
+    B --> D[EmailField Component]
+    B --> E[PasswordField Component]
+    B --> F[RememberCheckbox Component]
+    B --> G[LoginActions Component]
+    B --> H[Submit Button]
+    
+    C --> I[useState Hooks]
+    C --> J[useAuth Integration]
+    C --> K[useRouter Navigation]
+    C --> L[handleSubmit Logic]
+    
+    I --> M[FormData State]
+    I --> N[UI State]
+    I --> O[Error State]
+    
+    D --> P[TextField MUI<br/>Email/Usuario]
+    E --> Q[TextField MUI<br/>Password + Toggle]
+    F --> R[FormControlLabel<br/>Checkbox]
+    G --> S[Button Links<br/>Forgot/Register]
+    
+    T[auth.types.ts<br/>TypeScript Types] -.-> B
+    T -.-> C
+    T -.-> D
+    T -.-> E
+    T -.-> F
+    
+    style A fill:#1dd1a1,color:#fff
+    style B fill:#54a0ff,color:#fff
+    style C fill:#feca57
+    style D fill:#48dbfb
+    style E fill:#48dbfb
+    style F fill:#48dbfb
+    style G fill:#48dbfb
+    style T fill:#ee5a6f,color:#fff
