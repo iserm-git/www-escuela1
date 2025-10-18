@@ -49,7 +49,7 @@ export default function LoginPage() {
     >
       <Paper sx={{ p: 4, width: "100%" }} elevation={1}>
         <Typography variant="h5" sx={{ mb: 2, fontWeight: 700 }}>
-          Iniciar sesión
+          Iniciar sesión - Rama prueba
         </Typography>
 
         {errorMsg && (
